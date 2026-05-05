@@ -675,17 +675,28 @@ function LeccionesScreen({ palette, typeface }) {
 }
 
 // ─── App con Tweaks ─────────────────────────────────────────────
+function useIsMobile() {
+  const mq = window.matchMedia('(max-width: 767px)');
+  const [isMobile, setIsMobile] = React.useState(mq.matches);
+  React.useEffect(() => {
+    const handler = e => setIsMobile(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+  return isMobile;
+}
+
 function App() {
   const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
   const palette = PALETTES[tweaks.palette] || PALETTES.warm;
   const typeface = TYPEFACES[tweaks.typeface] || TYPEFACES.serif;
-  const isMobile = window.innerWidth < 600;
+  const isMobile = useIsMobile();
 
   return (
     <>
       {isMobile ? (
         <div style={{
-          width: '100%', height: '100vh',
+          width: '100%', height: '100dvh',
           background: palette.bg,
           fontFamily: typeface.body,
           overflow: 'hidden',
