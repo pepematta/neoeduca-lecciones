@@ -450,8 +450,364 @@ function PathView({ palette, typeface, onTapLesson }) {
   );
 }
 
-// ─── Detail view ────────────────────────────────────────────────
-function LessonDetail({ lesson, palette, typeface, onClose }) {
+// ─── Ilustración: manos conteniendo bebé ───────────────────────
+function ContainIllustration({ color, colorSoft }) {
+  return (
+    <svg viewBox="0 0 280 180" width="100%" style={{ display: 'block' }}>
+      {/* Incubadora — cuerpo */}
+      <rect x="40" y="80" width="200" height="80" rx="18" fill={colorSoft} stroke={color} strokeWidth="1.5" strokeOpacity="0.4"/>
+      {/* Ventanillas */}
+      <rect x="58" y="98" width="36" height="44" rx="8" fill="none" stroke={color} strokeWidth="1.2" strokeOpacity="0.35"/>
+      <rect x="186" y="98" width="36" height="44" rx="8" fill="none" stroke={color} strokeWidth="1.2" strokeOpacity="0.35"/>
+      {/* Bebé — cuerpo */}
+      <ellipse cx="140" cy="123" rx="28" ry="20" fill={color} opacity="0.18"/>
+      <ellipse cx="140" cy="123" rx="20" ry="14" fill={color} opacity="0.28"/>
+      {/* Bebé — cabeza */}
+      <circle cx="140" cy="103" r="13" fill={color} opacity="0.32"/>
+      {/* Mano izquierda — palma sobre cabeza */}
+      <ellipse cx="140" cy="89" rx="22" ry="9" rx2="22" fill={color} opacity="0.55"/>
+      <rect x="118" y="80" width="44" height="10" rx="5" fill={color} opacity="0.55"/>
+      {/* Dedos mano izquierda */}
+      {[122, 130, 138, 146, 154].map((x, i) => (
+        <rect key={i} x={x} y={68} width="7" height={10 + i % 3 * 2} rx="3.5" fill={color} opacity="0.45"/>
+      ))}
+      {/* Mano derecha — palma sobre pies */}
+      <rect x="118" y="135" width="44" height="10" rx="5" fill={color} opacity="0.55"/>
+      {/* Dedos mano derecha */}
+      {[122, 130, 138, 146, 154].map((x, i) => (
+        <rect key={i} x={x} y={145} width="7" height={8 + i % 3 * 2} rx="3.5" fill={color} opacity="0.45"/>
+      ))}
+      {/* Monitor líneas */}
+      <rect x="56" y="62" width="60" height="14" rx="4" fill={colorSoft} stroke={color} strokeWidth="1" strokeOpacity="0.3"/>
+      <polyline points="60,69 66,69 70,63 74,75 78,66 82,69 110,69" fill="none" stroke={color} strokeWidth="1.5" opacity="0.5" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+}
+
+// ─── Contenido completo: Tocar y contener con calma ────────────
+function LessonContentTocar({ palette, typeface, onClose, onComplete }) {
+  const color = palette.pillar1;
+  const colorSoft = palette.pillar1Soft;
+  const [scrollPct, setScrollPct] = React.useState(0);
+
+  const handleScroll = e => {
+    const el = e.currentTarget;
+    const pct = el.scrollTop / (el.scrollHeight - el.clientHeight);
+    setScrollPct(Math.min(1, pct));
+  };
+
+  const STEPS = [
+    {
+      icon: (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <path d="M6.5 2h11a1 1 0 011 1v2a4 4 0 01-4 4h-5a4 4 0 01-4-4V3a1 1 0 011-1z" stroke={color} strokeWidth="1.8" strokeLinecap="round"/>
+          <path d="M12 9v4M8 17h8" stroke={color} strokeWidth="1.8" strokeLinecap="round"/>
+          <path d="M5 13c0 3.866 3.134 7 7 7s7-3.134 7-7" stroke={color} strokeWidth="1.8" strokeLinecap="round"/>
+        </svg>
+      ),
+      title: 'Lava y calienta tus manos',
+      text: 'Frota las palmas entre sí por 30 segundos. Las manos frías pueden asustar a tu bebé — el calor es parte del mensaje.',
+    },
+    {
+      icon: (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <rect x="3" y="8" width="18" height="12" rx="3" stroke={color} strokeWidth="1.8"/>
+          <path d="M7 8V6a5 5 0 0110 0v2" stroke={color} strokeWidth="1.8" strokeLinecap="round"/>
+          <circle cx="12" cy="14" r="2" fill={color} opacity="0.5"/>
+        </svg>
+      ),
+      title: 'Pide abrir las ventanitas',
+      text: 'Avisa a la enfermera o neonatólogo. Ellos abrirán los portillos laterales de la incubadora para que puedas poner tus manos.',
+    },
+    {
+      icon: (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <path d="M12 3C8 3 5 6 5 10c0 5 7 11 7 11s7-6 7-11c0-4-3-7-7-7z" stroke={color} strokeWidth="1.8" fill={colorSoft}/>
+          <circle cx="12" cy="10" r="2.5" stroke={color} strokeWidth="1.5"/>
+        </svg>
+      ),
+      title: 'Una mano en la cabeza, otra en los pies',
+      text: 'Coloca suavemente una palma sobre la cabecita de {nombre} y la otra cubriendo sus pies y glúteos. Sin presionar — solo apoyar.',
+    },
+    {
+      icon: (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke={color} strokeWidth="1.8" strokeLinecap="round"/>
+        </svg>
+      ),
+      title: 'Quédate quieta. Respira.',
+      text: 'No acaricies ni muevas las manos. Inhala profundo — tu bebé siente tu ritmo. Mantén la posición 5 a 10 minutos.',
+    },
+  ];
+
+  return (
+    <div style={{
+      position: 'absolute', inset: 0, background: palette.bg, zIndex: 30,
+      display: 'flex', flexDirection: 'column',
+      animation: 'neoSlideUp 0.32s cubic-bezier(0.2, 0.8, 0.2, 1)',
+    }}>
+      {/* Barra superior fija */}
+      <div style={{
+        position: 'relative', zIndex: 10,
+        background: palette.bg,
+        borderBottom: `1px solid ${palette.line}`,
+        flexShrink: 0,
+      }}>
+        {/* Barra de progreso de lectura */}
+        <div style={{
+          position: 'absolute', bottom: -1, left: 0,
+          height: 2, borderRadius: 999,
+          background: color,
+          width: `${scrollPct * 100}%`,
+          transition: 'width 0.1s linear',
+        }}/>
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '52px 16px 14px',
+        }}>
+          <button onClick={onClose} style={{
+            width: 36, height: 36, borderRadius: 999,
+            background: palette.bgSoft, border: 'none',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer', padding: 0, flexShrink: 0,
+          }}>
+            <svg width="14" height="14" viewBox="0 0 24 24">
+              <path d="M15 5l-7 7 7 7" stroke={palette.ink} strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
+          <div style={{ textAlign: 'center', flex: 1, padding: '0 12px' }}>
+            <div style={{
+              fontFamily: typeface.body, fontSize: 13, fontWeight: 600,
+              color: palette.ink, letterSpacing: -0.1,
+            }}>Tocar y contener con calma</div>
+            <div style={{
+              fontFamily: typeface.body, fontSize: 11,
+              color: palette.inkMuted, marginTop: 2,
+            }}>Lección 3 · 4 min</div>
+          </div>
+          <div style={{ width: 36 }}/>
+        </div>
+      </div>
+
+      {/* Scroll body */}
+      <div onScroll={handleScroll} style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
+
+        {/* Hero ilustración */}
+        <div style={{
+          background: colorSoft,
+          padding: '28px 24px 20px',
+          borderBottom: `1px solid ${color}22`,
+        }}>
+          <div style={{
+            fontFamily: typeface.body, fontSize: 11, color: color,
+            fontWeight: 600, letterSpacing: 0.8, textTransform: 'uppercase',
+            marginBottom: 12,
+          }}>Pilar 1 · Cuerpo & cuidados</div>
+          <ContainIllustration color={color} colorSoft={palette.card}/>
+          <div style={{
+            marginTop: 16,
+            fontFamily: typeface.body, fontSize: 12,
+            color: palette.inkMuted, textAlign: 'center', fontStyle: 'italic',
+          }}>
+            El toque contenedor: dos manos, un abrazo sin movimiento.
+          </div>
+        </div>
+
+        <div style={{ padding: '26px 22px 0' }}>
+
+          {/* Intro */}
+          <p style={{
+            fontFamily: typeface.head, fontSize: 20, color: palette.ink,
+            lineHeight: 1.42, fontWeight: 600, margin: 0,
+            letterSpacing: -0.2,
+          }}>
+            Tocar a <em style={{ color: color, fontStyle: 'italic' }}>{BABY.name}</em> de la manera correcta puede ser su mejor regulador en este momento.
+          </p>
+          <p style={{
+            fontFamily: typeface.body, fontSize: 15, color: palette.inkSoft,
+            lineHeight: 1.65, marginTop: 14, marginBottom: 0,
+          }}>
+            No se trata de acariciar. En la UCIN, el movimiento puede ser demasiado estímulo para un bebé prematuro. Lo que necesita es <strong style={{ color: palette.ink }}>contención</strong>: presión firme, calida y quieta, como el abrazo del útero.
+          </p>
+
+          {/* Callout: ¿Qué es? */}
+          <div style={{
+            marginTop: 24,
+            background: palette.card,
+            border: `1.5px solid ${color}44`,
+            borderLeft: `4px solid ${color}`,
+            borderRadius: 14, padding: '16px 18px',
+          }}>
+            <div style={{
+              fontFamily: typeface.body, fontSize: 11, fontWeight: 700,
+              color: color, letterSpacing: 0.7, textTransform: 'uppercase',
+              marginBottom: 8,
+            }}>¿Qué es el toque contenedor?</div>
+            <p style={{
+              fontFamily: typeface.body, fontSize: 14, color: palette.ink,
+              lineHeight: 1.6, margin: 0,
+            }}>
+              Una técnica de cuidado canguro básica donde apoyás ambas palmas —una en la cabeza, otra en los pies— sin moverte. Reproduce la sensación de estar envuelto y protegido.
+            </p>
+          </div>
+
+          {/* Sección pasos */}
+          <div style={{
+            marginTop: 30,
+            fontFamily: typeface.head, fontSize: 17, fontWeight: 600,
+            color: palette.ink, letterSpacing: -0.2, marginBottom: 16,
+          }}>Cómo hacerlo, paso a paso</div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {STEPS.map((step, i) => (
+              <div key={i} style={{
+                background: palette.card,
+                border: `1px solid ${palette.line}`,
+                borderRadius: 18, padding: '16px 18px',
+                display: 'flex', gap: 14, alignItems: 'flex-start',
+              }}>
+                <div style={{
+                  width: 42, height: 42, borderRadius: 12,
+                  background: colorSoft,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  flexShrink: 0,
+                }}>
+                  {step.icon}
+                </div>
+                <div>
+                  <div style={{
+                    fontFamily: typeface.body, fontSize: 14, fontWeight: 700,
+                    color: palette.ink, marginBottom: 5, display: 'flex',
+                    alignItems: 'center', gap: 8,
+                  }}>
+                    <span style={{
+                      width: 18, height: 18, borderRadius: 999,
+                      background: color, color: '#fff',
+                      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: 10, fontWeight: 800, flexShrink: 0,
+                    }}>{i + 1}</span>
+                    {step.title}
+                  </div>
+                  <div style={{
+                    fontFamily: typeface.body, fontSize: 13,
+                    color: palette.inkSoft, lineHeight: 1.6,
+                  }}>
+                    {step.text.replace('{nombre}', BABY.name)}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* ¿Por qué funciona? */}
+          <div style={{
+            marginTop: 30,
+            background: `linear-gradient(135deg, ${colorSoft}, ${palette.bgSoft})`,
+            borderRadius: 18, padding: '20px 20px',
+            border: `1px solid ${color}33`,
+          }}>
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12,
+            }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2a7 7 0 017 7c0 2.5-1.3 4.7-3.3 6L15 17H9l-.7-2C6.3 13.7 5 11.5 5 9a7 7 0 017-7z" stroke={color} strokeWidth="1.8" fill={colorSoft}/>
+                <path d="M9 21h6M10 17v4M14 17v4" stroke={color} strokeWidth="1.8" strokeLinecap="round"/>
+              </svg>
+              <div style={{
+                fontFamily: typeface.body, fontSize: 12, fontWeight: 700,
+                color: color, letterSpacing: 0.5, textTransform: 'uppercase',
+              }}>¿Por qué funciona?</div>
+            </div>
+            <p style={{
+              fontFamily: typeface.body, fontSize: 14, color: palette.ink,
+              lineHeight: 1.65, margin: 0,
+            }}>
+              El tacto firme activa el sistema nervioso parasimpático del bebé, reduciendo el cortisol (hormona del estrés). Estudios en neonatología muestran que bebés que reciben toque contenedor regularmente <strong>aumentan de peso más rápido</strong> y tienen ciclos de sueño más estables.
+            </p>
+          </div>
+
+          {/* Tips */}
+          <div style={{ marginTop: 28 }}>
+            <div style={{
+              fontFamily: typeface.head, fontSize: 17, fontWeight: 600,
+              color: palette.ink, letterSpacing: -0.2, marginBottom: 14,
+            }}>Para tener en cuenta</div>
+            {[
+              { emoji: '🤲', text: 'Podés turnarte con tu pareja — ambos pueden practicarlo.' },
+              { emoji: '🔕', text: 'Apagá o silenciá el celular antes de comenzar.' },
+              { emoji: '⏱', text: 'Con 5 a 10 minutos es suficiente. No es necesario más tiempo.' },
+              { emoji: '💬', text: 'Podés hablarle en voz muy baja mientras lo hacés.' },
+            ].map((tip, i) => (
+              <div key={i} style={{
+                display: 'flex', gap: 12, alignItems: 'flex-start',
+                padding: '10px 0',
+                borderBottom: i < 3 ? `1px solid ${palette.line}` : 'none',
+              }}>
+                <span style={{ fontSize: 18, flexShrink: 0, marginTop: 1 }}>{tip.emoji}</span>
+                <div style={{
+                  fontFamily: typeface.body, fontSize: 14,
+                  color: palette.inkSoft, lineHeight: 1.55,
+                }}>{tip.text}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Dato curioso */}
+          <div style={{
+            marginTop: 28,
+            background: palette.card,
+            border: `1px solid ${palette.line}`,
+            borderRadius: 18, padding: '18px 20px',
+            display: 'flex', gap: 14,
+          }}>
+            <div style={{ fontSize: 28, flexShrink: 0 }}>🌿</div>
+            <div>
+              <div style={{
+                fontFamily: typeface.body, fontSize: 11, fontWeight: 700,
+                color: palette.inkMuted, letterSpacing: 0.6,
+                textTransform: 'uppercase', marginBottom: 6,
+              }}>Sabías que</div>
+              <p style={{
+                fontFamily: typeface.body, fontSize: 14, color: palette.ink,
+                lineHeight: 1.6, margin: 0,
+              }}>
+                El olfato es uno de los sentidos más desarrollados en los prematuros. {BABY.name} ya reconoce tu olor. Tu presencia, aunque no puedas verlo, lo calma.
+              </p>
+            </div>
+          </div>
+
+          {/* Espacio para CTA */}
+          <div style={{ height: 100 }}/>
+        </div>
+      </div>
+
+      {/* CTA fijo al fondo */}
+      <div style={{
+        position: 'absolute', bottom: 0, left: 0, right: 0,
+        padding: '14px 22px 36px',
+        background: `linear-gradient(180deg, ${palette.bg}00 0%, ${palette.bg} 36%)`,
+        flexShrink: 0,
+      }}>
+        <button onClick={onComplete} style={{
+          width: '100%', height: 54, borderRadius: 999,
+          background: color, color: '#fff', border: 'none',
+          fontFamily: typeface.body, fontSize: 16, fontWeight: 600,
+          letterSpacing: 0.2, cursor: 'pointer',
+          boxShadow: `0 4px 18px ${color}55`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+        }}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M5 12.5l4.5 4.5L19 7.5" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          Marcar como completada
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── Detail view (preview antes de iniciar) ─────────────────────
+function LessonDetail({ lesson, palette, typeface, onClose, onStart }) {
   const color = pillarColor(lesson.pillar, palette);
   const colorSoft = pillarColor(lesson.pillar, palette, true);
   const pillar = PILLARS.find(p => p.n === lesson.pillar);
@@ -519,36 +875,15 @@ function LessonDetail({ lesson, palette, typeface, onClose }) {
         }}>
           En esta lección aprenderás la técnica del "toque contenedor": apoyar tus manos sobre la cabeza y los pies de tu bebé, sin movimiento, dejando que sienta tu calor y tu calma.
         </p>
-
-        {/* Pasos */}
-        <div style={{ marginTop: 24, display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {[
-            'Lava tus manos y caliéntalas frotándolas',
-            'Pide al equipo abrir las ventanitas de la incubadora',
-            'Apoya una mano sobre su cabecita, otra sobre sus pies',
-            'Quédate quieta. Respira. 5 a 10 minutos basta.',
-          ].map((step, i) => (
+        <div style={{
+          marginTop: 24, display: 'flex', gap: 12, flexWrap: 'wrap',
+        }}>
+          {['4 pasos prácticos', 'Por qué funciona', 'Tips para ambos papás', 'Dato curioso'].map((tag, i) => (
             <div key={i} style={{
-              display: 'flex', gap: 12, alignItems: 'flex-start',
-              background: palette.card, padding: '14px 16px',
-              borderRadius: 16, border: `1px solid ${palette.line}`,
-            }}>
-              <div style={{
-                width: 24, height: 24, borderRadius: 999,
-                background: colorSoft, color: color,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontFamily: typeface.head, fontSize: 13, fontWeight: 700,
-                flexShrink: 0,
-              }}>
-                {i + 1}
-              </div>
-              <div style={{
-                fontFamily: typeface.body, fontSize: 14,
-                color: palette.ink, lineHeight: 1.5,
-              }}>
-                {step}
-              </div>
-            </div>
+              background: colorSoft, color: color,
+              padding: '6px 14px', borderRadius: 999,
+              fontFamily: typeface.body, fontSize: 12, fontWeight: 600,
+            }}>{tag}</div>
           ))}
         </div>
       </div>
@@ -559,13 +894,15 @@ function LessonDetail({ lesson, palette, typeface, onClose }) {
         padding: '14px 22px 38px',
         background: `linear-gradient(180deg, ${palette.bg}00 0%, ${palette.bg} 30%)`,
       }}>
-        <button style={{
+        <button onClick={onStart} style={{
           width: '100%', height: 54, borderRadius: 999,
           background: color, color: '#fff', border: 'none',
           fontFamily: typeface.body, fontSize: 16, fontWeight: 600,
           letterSpacing: 0.2, cursor: 'pointer',
           boxShadow: `0 4px 14px ${color}55`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
         }}>
+          <PlayMark color="#fff" size={14}/>
           Empezar lección
         </button>
       </div>
@@ -620,6 +957,11 @@ function TabBar({ palette, typeface }) {
 // ─── Pantalla completa ─────────────────────────────────────────
 function LeccionesScreen({ palette, typeface }) {
   const [openLesson, setOpenLesson] = React.useState(null);
+  const [showContent, setShowContent] = React.useState(false);
+
+  const handleClose = () => { setOpenLesson(null); setShowContent(false); };
+  const handleComplete = () => { setOpenLesson(null); setShowContent(false); };
+
   return (
     <div style={{
       width: '100%', height: '100%', position: 'relative',
@@ -628,7 +970,7 @@ function LeccionesScreen({ palette, typeface }) {
       {/* Status bar background */}
       <div style={{ height: 58, background: palette.bg }}/>
 
-      {/* Top chrome: Lecciones título compacto + ellipsis */}
+      {/* Top chrome */}
       <div style={{
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         padding: '0 22px 4px',
@@ -664,10 +1006,24 @@ function LeccionesScreen({ palette, typeface }) {
 
       <TabBar palette={palette} typeface={typeface}/>
 
-      {openLesson && (
+      {/* Preview de lección */}
+      {openLesson && !showContent && (
         <LessonDetail
           lesson={openLesson} palette={palette} typeface={typeface}
-          onClose={() => setOpenLesson(null)}
+          onClose={handleClose}
+          onStart={openLesson.id === 'l3'
+            ? () => setShowContent(true)
+            : undefined
+          }
+        />
+      )}
+
+      {/* Contenido completo: solo para l3 por ahora */}
+      {openLesson && showContent && openLesson.id === 'l3' && (
+        <LessonContentTocar
+          palette={palette} typeface={typeface}
+          onClose={() => setShowContent(false)}
+          onComplete={handleComplete}
         />
       )}
     </div>
