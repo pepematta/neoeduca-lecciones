@@ -679,19 +679,32 @@ function App() {
   const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
   const palette = PALETTES[tweaks.palette] || PALETTES.warm;
   const typeface = TYPEFACES[tweaks.typeface] || TYPEFACES.serif;
+  const isMobile = window.innerWidth < 600;
 
   return (
     <>
-      <div style={{
-        minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: '#EFE7DA',
-        padding: '40px 20px',
-        fontFamily: typeface.body,
-      }}>
-        <IOSDevice width={PHONE_WIDTH} height={874} dark={false}>
+      {isMobile ? (
+        <div style={{
+          width: '100%', height: '100vh',
+          background: palette.bg,
+          fontFamily: typeface.body,
+          overflow: 'hidden',
+          position: 'fixed', inset: 0,
+        }}>
           <LeccionesScreen palette={palette} typeface={typeface}/>
-        </IOSDevice>
-      </div>
+        </div>
+      ) : (
+        <div style={{
+          minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          background: '#EFE7DA',
+          padding: '40px 20px',
+          fontFamily: typeface.body,
+        }}>
+          <IOSDevice width={PHONE_WIDTH} height={874} dark={false}>
+            <LeccionesScreen palette={palette} typeface={typeface}/>
+          </IOSDevice>
+        </div>
+      )}
 
       <TweaksPanel title="Tweaks">
         <TweakSection title="Paleta">
