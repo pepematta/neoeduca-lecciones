@@ -675,47 +675,45 @@ function LeccionesScreen({ palette, typeface }) {
 }
 
 // ─── App con Tweaks ─────────────────────────────────────────────
-function useIsMobile() {
-  const mq = window.matchMedia('(max-width: 767px)');
-  const [isMobile, setIsMobile] = React.useState(mq.matches);
-  React.useEffect(() => {
-    const handler = e => setIsMobile(e.matches);
-    mq.addEventListener('change', handler);
-    return () => mq.removeEventListener('change', handler);
-  }, []);
-  return isMobile;
-}
-
 function App() {
   const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
   const palette = PALETTES[tweaks.palette] || PALETTES.warm;
   const typeface = TYPEFACES[tweaks.typeface] || TYPEFACES.serif;
-  const isMobile = useIsMobile();
 
   return (
     <>
-      {isMobile ? (
-        <div style={{
-          width: '100%', height: '100dvh',
-          background: palette.bg,
-          fontFamily: typeface.body,
-          overflow: 'hidden',
-          position: 'fixed', inset: 0,
-        }}>
+      <style>{`
+        .neo-mobile { display: block; }
+        .neo-desktop { display: none; }
+        @media (min-width: 768px) {
+          .neo-mobile { display: none; }
+          .neo-desktop { display: flex; }
+        }
+      `}</style>
+
+      {/* Mobile: fullscreen directo */}
+      <div className="neo-mobile" style={{
+        width: '100%', height: '100dvh',
+        background: palette.bg,
+        fontFamily: typeface.body,
+        overflow: 'hidden',
+        position: 'fixed', inset: 0,
+      }}>
+        <LeccionesScreen palette={palette} typeface={typeface}/>
+      </div>
+
+      {/* Desktop: iPhone frame */}
+      <div className="neo-desktop" style={{
+        minHeight: '100vh',
+        alignItems: 'center', justifyContent: 'center',
+        background: '#EFE7DA',
+        padding: '40px 20px',
+        fontFamily: typeface.body,
+      }}>
+        <IOSDevice width={PHONE_WIDTH} height={874} dark={false}>
           <LeccionesScreen palette={palette} typeface={typeface}/>
-        </div>
-      ) : (
-        <div style={{
-          minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          background: '#EFE7DA',
-          padding: '40px 20px',
-          fontFamily: typeface.body,
-        }}>
-          <IOSDevice width={PHONE_WIDTH} height={874} dark={false}>
-            <LeccionesScreen palette={palette} typeface={typeface}/>
-          </IOSDevice>
-        </div>
-      )}
+        </IOSDevice>
+      </div>
 
       <TweaksPanel title="Tweaks">
         <TweakSection title="Paleta">
